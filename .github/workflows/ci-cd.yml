@@ -17,8 +17,8 @@ jobs:
                 java-version: '21'
                 distribution: 'temurin'
 
-            - name: Build image Docker
-              run: docker build -t delivery-tech:latest
+            #- name: Build image Docker
+            #  run: docker build -t delivery-tech:latest
 
             - name: Build with Maven
             # Utilizamos 'clean install' para compilar e empacotar
