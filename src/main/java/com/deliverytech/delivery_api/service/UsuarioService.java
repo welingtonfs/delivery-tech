@@ -1,6 +1,5 @@
 package com.deliverytech.delivery_api.service;
 
-import java.util.Optional;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.deliverytech.delivery_api.dto.request.LoginRequest;
 import com.deliverytech.delivery_api.dto.request.RegisterRequest;

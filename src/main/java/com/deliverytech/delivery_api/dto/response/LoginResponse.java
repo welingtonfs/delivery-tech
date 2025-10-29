@@ -1,6 +1,5 @@
 package com.deliverytech.delivery_api.dto.response;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Optional;
  
+@Service
 public class UsuarioServiceImpl implements UsuarioService {
 
     @Autowired 
@@ -68,16 +69,63 @@ public class UsuarioServiceImpl implements UsuarioService {
     // Método para buscar um usuário específico - por ID
     @Override
     public Object buscarPorId(Long id){
-        
         Optional<Usuario> usuario = usuarioRepository.findById(id);
-
         if(usuario.isPresent()) {
             return usuario.get();
         }
-
         throw new RuntimeException("Usuário não encontrado" + id);
-
     }
+
+    // Método para inativar usuário
+    @Override
+    public void inativarUsuario(Long id) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            usuario.setAtivo(false);
+            usuarioRepository.save(usuario);
+        } else {
+            throw new RuntimeException("Usuario não encontrado " + id);
+        }    
+    }
+
+    // Método para verificação e busca por email
+    @Override
+    public boolean existePorEmail(String email) {
+        return usuarioRepository.findByEmail(email) != null;
+    }
+
+    @Override
+    public UserDetails buscarPorEmail(String email) {
+        UserDetails usuario = usuarioRepository.findByEmail(email);
+        if (usuario == null) {
+            throw new RuntimeException("Usuário não encontrado " + email);
+        }
+        return usuario;
+    }
+
+    @Override
+    public Usuario salvar(RegisterRequest registerRequest) {
+        if (existePorEmail(registerRequest.getEmail())) {
+            throw new RuntimeException("Email já cadastrado: " + registerRequest.getEmail());
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setNome(registerRequest.getNome());
+        usuario.setEmail(registerRequest.getEmail());
+        usuario.setSenha(passwordEncoder.encode(registerRequest.getSenha()));
+        usuario.setAtivo(true);
+        usuario.setDataCriacao(LocalDateTime.now());  
+
+        if (registerRequest.getRole() == null) {
+            usuario.setRole(Role.USER);
+        } else {
+            usuario.setRole(registerRequest.getRole());
+        }
+
+        return usuarioRepository.save(usuario);
+    }
+
 
 
 }
