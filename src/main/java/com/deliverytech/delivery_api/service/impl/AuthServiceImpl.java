@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.deliverytech.delivery_api.dto.request.LoginRequest;
 import com.deliverytech.delivery_api.dto.request.RegisterRequest;
 import com.deliverytech.delivery_api.dto.response.LoginResponse;
+import com.deliverytech.delivery_api.dto.response.UserResponse;
 import com.deliverytech.delivery_api.model.Usuario;
 import com.deliverytech.delivery_api.repository.UsuarioRepository;
 import com.deliverytech.delivery_api.service.AuthService;
@@ -39,11 +40,11 @@ public class AuthServiceImpl implements UserDetailsService, AuthService {
         throw new UnsupportedOperationException("Registro ainda não implementado");        
     }
 
-    /*
+    
     @Override
     public UserResponse getCurrentUser() {
         throw new UnsupportedOperationException("Usuario ainda não implementado");     
     }
-    */
+    
 
 }
