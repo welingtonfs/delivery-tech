@@ -3,9 +3,9 @@ package com.deliverytech.delivery_api.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
-import java.sql.ClientInfoStatus;
+// import java.sql.ClientInfoStatus;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+// import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -37,6 +37,7 @@ public class Pedido {
     @Enumerated(EnumType.STRING)
     private StatusPedido status;
 
+    @Builder.Default
     private LocalDateTime dataPedido = LocalDateTime.now();
 
     @ManyToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
