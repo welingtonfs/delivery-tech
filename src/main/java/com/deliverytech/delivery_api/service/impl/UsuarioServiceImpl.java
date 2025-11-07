@@ -19,24 +19,24 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
- 
+
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
 
-    @Autowired 
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
     private JwtUtil jwtUtil;
 
-    @Autowired    
+    @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @Autowired    
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public LoginResponse login(LoginRequest loginRequest){
+    public LoginResponse login(LoginRequest loginRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -46,37 +46,32 @@ public class UsuarioServiceImpl implements UsuarioService {
             );
 
             String token = jwtUtil.generateToken(authentication.getName());
-
-            LoginResponse response = new LoginResponse();
             
+            LoginResponse response = new LoginResponse();
             response.setToken(token);
             response.setUsername(authentication.getName());
             response.setMessage("Login realizado com sucesso");
             
             return response;
-
         } catch (Exception e) {
             throw new RuntimeException("Credenciais inválidas", e);
         }
     }
 
-    // Espaço reservado para inserção de tokens na blacklist
     @Override
     public void logout(String token) {
-
+        // Implementar lógica de logout se necessário (ex: blacklist)
     }
 
-    // Método para buscar um usuário específico - por ID
     @Override
-    public Object buscarPorId(Long id){
+    public Object buscarPorId(Long id) {
         Optional<Usuario> usuario = usuarioRepository.findById(id);
-        if(usuario.isPresent()) {
+        if (usuario.isPresent()) {
             return usuario.get();
         }
-        throw new RuntimeException("Usuário não encontrado" + id);
+        throw new RuntimeException("Usuário não encontrado com id: " + id);
     }
 
-    // Método para inativar usuário
     @Override
     public void inativarUsuario(Long id) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
@@ -85,11 +80,10 @@ public class UsuarioServiceImpl implements UsuarioService {
             usuario.setAtivo(false);
             usuarioRepository.save(usuario);
         } else {
-            throw new RuntimeException("Usuario não encontrado " + id);
-        }    
+            throw new RuntimeException("Usuário não encontrado com id: " + id);
+        }
     }
 
-    // Método para verificação e busca por email
     @Override
     public boolean existePorEmail(String email) {
         return usuarioRepository.findByEmail(email) != null;
@@ -99,7 +93,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     public UserDetails buscarPorEmail(String email) {
         UserDetails usuario = usuarioRepository.findByEmail(email);
         if (usuario == null) {
-            throw new RuntimeException("Usuário não encontrado " + email);
+            throw new RuntimeException("Usuário não encontrado: " + email);
         }
         return usuario;
     }
@@ -115,17 +109,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.setEmail(registerRequest.getEmail());
         usuario.setSenha(passwordEncoder.encode(registerRequest.getSenha()));
         usuario.setAtivo(true);
-        usuario.setDataCriacao(LocalDateTime.now());  
+        usuario.setDataCriacao(LocalDateTime.now());
 
         if (registerRequest.getRole() == null) {
-            usuario.setRole(Role.USER);
+            usuario.setRole(Role.USER); // valor padrão
         } else {
             usuario.setRole(registerRequest.getRole());
         }
 
         return usuarioRepository.save(usuario);
     }
-
-
-
 }

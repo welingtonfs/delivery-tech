@@ -31,7 +31,7 @@ public class Cliente {
     private LocalDateTime dataCriacao = LocalDateTime.now();
     
     @JsonIgnore
-    public void Inativar() {
+    public void inativar() {
         this.ativo = false;
     }
 

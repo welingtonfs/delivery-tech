@@ -14,10 +14,10 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     Optional<Cliente> findByEmail(String email);
     // SELECT * FROM cliente WHERE email = ?
 
-    boolean existByEmail(String email);
+    boolean existsByEmail(String email);
     // SELECT count(*) FROM cliente WHERE email = ?
 
-    List<Cliente> findbyAtivoTrue();
+    List<Cliente> findByAtivoTrue();
     // SELECT * FROM cliente WHERE ativo = true
 
     List<Cliente> findByNomeContainingIgnoreCase(String nome);
@@ -29,5 +29,5 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
                     "GROUP BY c.id, c.nome " +
                     "ORDER BY total_pedidos DESC " +
                     "LIMIT 10", nativeQuery = true)   
-                    List<Objects[]> rankingClientesPorPedidos();
+    List<Objects[]> rankingClientesPorPedidos();
 }

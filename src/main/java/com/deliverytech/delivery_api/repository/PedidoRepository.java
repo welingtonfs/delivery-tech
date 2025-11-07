@@ -6,17 +6,18 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.deliverytech.delivery_api.model.Pedido;
 import com.deliverytech.delivery_api.model.StatusPedido;
 import com.deliverytech.delivery_api.projection.RelatorioVendas;
-
+@Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
     List<Pedido> findByClienteId(Long cliente);
     List<Pedido> findByRestauranteId(Long restauranteId);
     List<Pedido> findByStatus(StatusPedido status);
-    List<Pedido> findByDataBetween(LocalDateTime inicio, LocalDateTime fim);
+    List<Pedido> findByDataPedidoBetween(LocalDateTime inicio, LocalDateTime fim);
 
     @Query("SELECT p FROM Pedido p LEFT JOIN p.itens i LEFT JOIN i.produto WHERE p.id = :id")
     List<Pedido> findByIdWithItens(@Param("id") Long id);
@@ -28,7 +29,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
             "FROM Pedido p " +
             "GROUP BY p.restaurante.nome " +
             "ORDER BY SUM(p.valorTotal) DESC")
-            List<Object[]> calcularTotalVendasPorRestaurante();
+    List<Object[]> calcularTotalVendasPorRestaurante();
 
     @Query("SELECT p FROM Pedido p " +
             "WHERE p.dataPedido BETWEEN :inicio AND :fim " +
@@ -44,7 +45,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
             "COUNT(p.id) as quantidadePedidos " +
             "FROM Pedido p " +
             "GROUP BY p.restaurante.nome ")
-            List<RelatorioVendas> obterRelatorioVendasPorRestaurante();    
+    List<RelatorioVendas> obterRelatorioVendasPorRestaurante();    
 
     /**
      * Buscar por status e período
