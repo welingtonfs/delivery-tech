@@ -1,0 +1,266 @@
+classDiagram
+    class Cliente {
+        -Long id
+        -String nome
+        -String telefone
+        -String endereco
+        -String email
+        -Boolean ativo
+        -LocalDateTime dataCriacao
+    }
+    
+    class Usuario {
+        -Long id
+        -String nome
+        -String email
+        -String senha
+        -Role role
+        -Boolean ativo
+        -LocalDateTime dataCriacao
+        -Long restauranteId
+    }
+    
+    class Restaurante {
+        -Long id
+        -String nome
+        -String categoria
+        -String telefone
+        -BigDecimal avaliacao
+        -BigDecimal taxaEntrega
+        -Integer tempoEntregaMinutos
+        -Boolean ativo
+    }
+    
+    class Produto {
+        -Long id
+        -String nome
+        -String categoria
+        -String descricao
+        -BigDecimal preco
+        -Boolean disponivel
+    }
+    
+    class Pedido {
+        -Long id
+        -BigDecimal valorTotal
+        -String numeroPedido
+        -BigDecimal subtotal
+        -String observacoes
+        -StatusPedido status
+        -LocalDateTime dataPedido
+    }
+    
+    class ItemPedido {
+        -Long id
+        -Integer quantidade
+        -BigDecimal precoUnitario
+        -BigDecimal subtotal
+    }
+    
+    class Endereco {
+        -String rua
+        -String numero
+        -String bairro
+        -String cidade
+        -String estado
+        -String cep
+        -String complemento
+    }
+    
+    class StatusPedido {
+        <<enumeration>>
+        CRIADO
+        PENDENTE
+        CONFIRMADO
+        PREPARANDO
+        SAIU_PARA_ENTREGA
+        ENTREGUE
+        CANCELADO
+    }
+    
+    class Role {
+        <<enumeration>>
+        ADMIN
+        CLIENTE
+        RESTAURANTE
+        ENTREGADOR
+        USER
+    }
+    
+    class ClienteRepository {
+        <<interface>>
+    }
+    
+    class UsuarioRepository {
+        <<interface>>
+    }
+    
+    class RestauranteRepository {
+        <<interface>>
+    }
+    
+    class ProdutoRepository {
+        <<interface>>
+    }
+    
+    class PedidoRepository {
+        <<interface>>
+    }
+    
+    class ClienteService {
+        <<interface>>
+    }
+    
+    class ClienteServiceImpl {
+    }
+    
+    class UsuarioService {
+        <<interface>>
+    }
+    
+    class UsuarioServiceImpl {
+    }
+    
+    class AuthService {
+        <<interface>>
+    }
+    
+    class AuthServiceImpl {
+    }
+    
+    class RestauranteService {
+        <<interface>>
+    }
+    
+    class RestauranteServiceImpl {
+    }
+    
+    class ProdutoService {
+        <<interface>>
+    }
+    
+    class ProdutoServiceImpl {
+    }
+    
+    class PedidoService {
+        <<interface>>
+    }
+    
+    class PedidoServiceImpl {
+    }
+    
+    class RelatorioService {
+        <<interface>>
+    }
+    
+    class RelatorioServiceImpl {
+    }
+    
+    class ClienteController {
+    }
+    
+    class AuthController {
+    }
+    
+    class RestauranteController {
+    }
+    
+    class ProdutoController {
+    }
+    
+    class PedidoController {
+    }
+    
+    class RelatorioController {
+    }
+    
+    class JwtUtil {
+    }
+    
+    class JwtAuthenticationFilter {
+    }
+    
+    class SecurityConfig {
+    }
+    
+    class DataLoader {
+    }
+    
+    class DeliveryApiApplication {
+    }
+    
+    class GlobalExceptionHandler {
+    }
+    
+    class EntityNotFoundException {
+    }
+    
+    class BusinessException {
+    }
+    
+    class ConflictException {
+    }
+    
+    Cliente "1" --> "*" Pedido
+    Restaurante "1" --> "*" Pedido
+    Restaurante "1" --> "*" Produto
+    Pedido "1" --> "*" ItemPedido
+    ItemPedido "*" --> "1" Produto
+    Pedido --> StatusPedido
+    Pedido --> Endereco
+    Usuario --> Role
+    
+    ClienteRepository ..> Cliente
+    UsuarioRepository ..> Usuario
+    RestauranteRepository ..> Restaurante
+    ProdutoRepository ..> Produto
+    PedidoRepository ..> Pedido
+    
+    ClienteServiceImpl ..|> ClienteService
+    ClienteServiceImpl --> ClienteRepository
+    
+    UsuarioServiceImpl ..|> UsuarioService
+    UsuarioServiceImpl --> UsuarioRepository
+    
+    AuthServiceImpl ..|> AuthService
+    AuthServiceImpl --> UsuarioRepository
+    AuthServiceImpl --> JwtUtil
+    
+    RestauranteServiceImpl ..|> RestauranteService
+    RestauranteServiceImpl --> RestauranteRepository
+    
+    ProdutoServiceImpl ..|> ProdutoService
+    ProdutoServiceImpl --> ProdutoRepository
+    ProdutoServiceImpl --> RestauranteRepository
+    
+    PedidoServiceImpl ..|> PedidoService
+    PedidoServiceImpl --> PedidoRepository
+    PedidoServiceImpl --> ClienteRepository
+    PedidoServiceImpl --> RestauranteRepository
+    PedidoServiceImpl --> ProdutoRepository
+    
+    RelatorioServiceImpl ..|> RelatorioService
+    RelatorioServiceImpl --> PedidoRepository
+    RelatorioServiceImpl --> ClienteRepository
+    RelatorioServiceImpl --> ProdutoRepository
+    
+    ClienteController --> ClienteService
+    AuthController --> AuthService
+    RestauranteController --> RestauranteService
+    ProdutoController --> ProdutoService
+    PedidoController --> PedidoService
+    RelatorioController --> RelatorioService
+    
+    JwtAuthenticationFilter --> JwtUtil
+    SecurityConfig --> JwtAuthenticationFilter
+    
+    DataLoader --> ClienteRepository
+    DataLoader --> RestauranteRepository
+    DataLoader --> ProdutoRepository
+    DataLoader --> PedidoRepository
+    DeliveryApiApplication --> DataLoader
+    
+    GlobalExceptionHandler --> EntityNotFoundException
+    GlobalExceptionHandler --> BusinessException
+    GlobalExceptionHandler --> ConflictException
+ 
