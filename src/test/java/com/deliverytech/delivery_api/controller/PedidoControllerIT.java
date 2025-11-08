@@ -137,7 +137,7 @@ class PedidoControllerIT {
         pedido.setCliente(cliente);
         pedido.setRestaurante(restaurante);
         pedido.setValorTotal(BigDecimal.valueOf(35.90));
-        pedido.setStatus(StatusPedido.PENDENTE);
+        pedido.setStatusPedido(StatusPedido.PENDENTE);
         pedido.setEnderecoEntrega(enderecoEntrega); // ✅ Objeto Endereco
     }
 
@@ -240,7 +240,7 @@ class PedidoControllerIT {
         pedido2.setCliente(cliente);
         pedido2.setRestaurante(restaurante);
         pedido2.setValorTotal(BigDecimal.valueOf(45.90));
-        pedido2.setStatus(StatusPedido.CONFIRMADO);
+        pedido2.setStatusPedido(StatusPedido.CONFIRMADO);
         pedido2.setEnderecoEntrega(enderecoEntrega);
         pedidoRepository.save(pedido2);
 
@@ -333,7 +333,7 @@ class PedidoControllerIT {
     @WithMockUser
     void testConfirmarPedido_DeveRetornar200() throws Exception {
         // Given - Pedido no status CRIADO
-        pedido.setStatus(StatusPedido.CRIADO);
+        pedido.setStatusPedido(StatusPedido.CRIADO);
         Pedido pedidoSalvo = pedidoRepository.save(pedido);
 
         // When & Then

@@ -65,7 +65,7 @@ class PedidoServiceTest {
         pedido.setCliente(cliente);
         pedido.setRestaurante(restaurante);
         pedido.setValorTotal(BigDecimal.valueOf(35.90));
-        pedido.setStatus(StatusPedido.PENDENTE);
+        pedido.setStatusPedido(StatusPedido.PENDENTE);
         pedido.setDataPedido(LocalDateTime.now());
         pedido.setObservacoes("Sem cebola");
 
@@ -88,7 +88,7 @@ class PedidoServiceTest {
         // Then
         assertNotNull(resultado);
         assertEquals(1L, resultado.getId());
-        assertEquals(StatusPedido.PENDENTE, resultado.getStatus());
+        assertEquals(StatusPedido.PENDENTE, resultado.getStatusPedido());
         assertEquals(BigDecimal.valueOf(35.90), resultado.getValorTotal());
         assertEquals("João Silva Santos", resultado.getCliente().getNome());
         
@@ -136,7 +136,7 @@ class PedidoServiceTest {
         // Given
         Pedido pedidoAtualizado = new Pedido();
         pedidoAtualizado.setId(1L);
-        pedidoAtualizado.setStatus(StatusPedido.CONFIRMADO);
+        pedidoAtualizado.setStatusPedido(StatusPedido.CONFIRMADO);
         
         when(pedidoService.atualizarStatus(1L, StatusPedido.CONFIRMADO))
                 .thenReturn(pedidoAtualizado);
@@ -146,7 +146,7 @@ class PedidoServiceTest {
         
         // Then
         assertNotNull(resultado);
-        assertEquals(StatusPedido.CONFIRMADO, resultado.getStatus());
+        assertEquals(StatusPedido.CONFIRMADO, resultado.getStatusPedido());
         
         verify(pedidoService, times(1)).atualizarStatus(1L, StatusPedido.CONFIRMADO);
     }
@@ -157,7 +157,7 @@ class PedidoServiceTest {
         // Given
         Pedido pedido2 = new Pedido();
         pedido2.setId(2L);
-        pedido2.setStatus(StatusPedido.ENTREGUE);
+        pedido2.setStatusPedido(StatusPedido.ENTREGUE);
         
         List<Pedido> pedidos = List.of(pedido, pedido2);
         when(pedidoService.listarTodos()).thenReturn(pedidos);
@@ -168,8 +168,8 @@ class PedidoServiceTest {
         // Then
         assertNotNull(resultado);
         assertEquals(2, resultado.size());
-        assertEquals(StatusPedido.PENDENTE, resultado.get(0).getStatus());
-        assertEquals(StatusPedido.ENTREGUE, resultado.get(1).getStatus());
+        assertEquals(StatusPedido.PENDENTE, resultado.get(0).getStatusPedido());
+        assertEquals(StatusPedido.ENTREGUE, resultado.get(1).getStatusPedido());
         
         verify(pedidoService, times(1)).listarTodos();
     }
@@ -222,7 +222,7 @@ class PedidoServiceTest {
         // Then
         assertNotNull(resultado);
         assertEquals(1, resultado.size());
-        assertEquals(StatusPedido.PENDENTE, resultado.get(0).getStatus());
+        assertEquals(StatusPedido.PENDENTE, resultado.get(0).getStatusPedido());
         
         verify(pedidoService, times(1)).buscarPorStatus(StatusPedido.PENDENTE);
     }
@@ -233,7 +233,7 @@ class PedidoServiceTest {
         // Given - usando método que existe
         Pedido pedidoCancelado = new Pedido();
         pedidoCancelado.setId(1L);
-        pedidoCancelado.setStatus(StatusPedido.CANCELADO);
+        pedidoCancelado.setStatusPedido(StatusPedido.CANCELADO);
         
         when(pedidoService.cancelar(1L)).thenReturn(pedidoCancelado);
         
@@ -242,7 +242,7 @@ class PedidoServiceTest {
         
         // Then
         assertNotNull(resultado);
-        assertEquals(StatusPedido.CANCELADO, resultado.getStatus());
+        assertEquals(StatusPedido.CANCELADO, resultado.getStatusPedido());
         
         verify(pedidoService, times(1)).cancelar(1L);
     }
@@ -253,7 +253,7 @@ class PedidoServiceTest {
         // Given
         Pedido pedidoConfirmado = new Pedido();
         pedidoConfirmado.setId(1L);
-        pedidoConfirmado.setStatus(StatusPedido.CONFIRMADO);
+        pedidoConfirmado.setStatusPedido(StatusPedido.CONFIRMADO);
         
         when(pedidoService.confirmar(1L)).thenReturn(pedidoConfirmado);
         
@@ -262,7 +262,7 @@ class PedidoServiceTest {
         
         // Then
         assertNotNull(resultado);
-        assertEquals(StatusPedido.CONFIRMADO, resultado.getStatus());
+        assertEquals(StatusPedido.CONFIRMADO, resultado.getStatusPedido());
         
         verify(pedidoService, times(1)).confirmar(1L);
     }
@@ -338,7 +338,7 @@ class PedidoServiceTest {
         // Then
         assertNotNull(resultado);
         assertEquals(1, resultado.size());
-        assertEquals(StatusPedido.PENDENTE, resultado.get(0).getStatus());
+        assertEquals(StatusPedido.PENDENTE, resultado.get(0).getStatusPedido());
         
         verify(pedidoService, times(1)).listarComFiltros(StatusPedido.PENDENTE, dataInicio, dataFim);
     }

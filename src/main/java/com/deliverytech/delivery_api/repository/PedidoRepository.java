@@ -1,27 +1,28 @@
 package com.deliverytech.delivery_api.repository;
 
+import com.deliverytech.delivery_api.model.Pedido;
+import com.deliverytech.delivery_api.model.StatusPedido;
+import com.deliverytech.delivery_api.projection.RelatorioVendas;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.deliverytech.delivery_api.model.Pedido;
-import com.deliverytech.delivery_api.model.StatusPedido;
-import com.deliverytech.delivery_api.projection.RelatorioVendas;
+
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
-
-    List<Pedido> findByClienteId(Long cliente);
+    List<Pedido> findByClienteId(Long clienteId);
     List<Pedido> findByRestauranteId(Long restauranteId);
-    List<Pedido> findByStatus(StatusPedido status);
+    List<Pedido> findByStatusPedido(StatusPedido status);
     List<Pedido> findByDataPedidoBetween(LocalDateTime inicio, LocalDateTime fim);
 
     @Query("SELECT p FROM Pedido p LEFT JOIN p.itens i LEFT JOIN i.produto WHERE p.id = :id")
-    List<Pedido> findByIdWithItens(@Param("id") Long id);
-
+    Optional<Pedido> findByIdWithItens(@Param("id") Long id);
+    
     @Query("SELECT p FROM Pedido p LEFT JOIN FETCH p.itens i LEFT JOIN FETCH i.produto WHERE p.cliente.id = :clienteId")
     List<Pedido> findByClienteIdWithItens(@Param("clienteId") Long clienteId);
 
@@ -61,5 +62,7 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
      * Buscar pedidos até uma data
      */
     List<Pedido> findByDataPedidoLessThanEqual(LocalDateTime data);            
-
+    
+    // CORREÇÃO 3: Renomeado para coincidir com a propriedade 'statusPedido'
+    List<Pedido> findByStatusPedidoAndDataPedidoBetween(StatusPedido status, LocalDateTime inicio, LocalDateTime fim);
 }

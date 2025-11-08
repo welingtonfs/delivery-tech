@@ -1,10 +1,11 @@
 package com.deliverytech.delivery_api.health;
 
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 
 @Component("externalService")
-public class ExternalServiceHealthIndicator {
+public class ExternalServiceHealthIndicator implements HealthIndicator {
 
     private boolean serviceUp = true;
 
@@ -26,5 +27,4 @@ public class ExternalServiceHealthIndicator {
     public void setServiceUp(boolean serviceUp) {
         this.serviceUp = serviceUp;
     }
-
 }

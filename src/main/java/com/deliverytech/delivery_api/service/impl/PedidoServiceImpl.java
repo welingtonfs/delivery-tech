@@ -29,7 +29,7 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     public Pedido criar(Pedido pedido) {
         // ✅ SIMPLIFICAR: Definir dados básicos do pedido
-        pedido.setStatus(StatusPedido.CRIADO); // ✅ USAR CRIADO ao invés de PENDENTE
+        pedido.setStatusPedido(StatusPedido.CRIADO); // ✅ USAR CRIADO ao invés de PENDENTE
         pedido.setDataPedido(LocalDateTime.now());
         pedido.setValorTotal(BigDecimal.ZERO); // ✅ Iniciar com valor zero
         
@@ -56,7 +56,7 @@ public class PedidoServiceImpl implements PedidoService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Pedido> buscarPorIdComItens(Long id) {
+    public Optional<Pedido> buscarPorIdComItens(Long id) {
         return pedidoRepository.findByIdWithItens(id);
     }
 
@@ -100,27 +100,27 @@ public class PedidoServiceImpl implements PedidoService {
         Pedido pedido = pedidoRepository.findById(pedidoId)
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
 
-        pedido.setStatus(StatusPedido.CONFIRMADO);
+        pedido.setStatusPedido(StatusPedido.CONFIRMADO);
         return pedidoRepository.save(pedido);
     }
 
-@Override
-@Transactional
-public Pedido atualizarStatus(Long pedidoId, StatusPedido novoStatus) {
-    log.info("Atualizando status do pedido {} para: {}", pedidoId, novoStatus);
-    
-    Pedido pedido = pedidoRepository.findById(pedidoId)
-        .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
-    
-    log.info("Status atual do pedido {}: {}", pedidoId, pedido.getStatus());
-    
-    pedido.setStatus(novoStatus);
-    
-    Pedido salvo = pedidoRepository.save(pedido);
-    log.info("Status do pedido {} atualizado com sucesso para: {}", pedidoId, novoStatus);
-    
-    return salvo;
-}
+    @Override
+    @Transactional
+    public Pedido atualizarStatus(Long pedidoId, StatusPedido novoStatus) {
+        log.info("Atualizando status do pedido {} para: {}", pedidoId, novoStatus);
+        
+        Pedido pedido = pedidoRepository.findById(pedidoId)
+                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+        
+        log.info("Status atual do pedido {}: {}", pedidoId, pedido.getStatusPedido());
+        
+        pedido.setStatusPedido(novoStatus);
+        
+        Pedido salvo = pedidoRepository.save(pedido);
+        log.info("Status do pedido {} atualizado com sucesso para: {}", pedidoId, novoStatus);
+        
+        return salvo;
+    }
 
     // ✅ IMPLEMENTAR método calcularTotal
     @Override
@@ -148,14 +148,14 @@ public Pedido atualizarStatus(Long pedidoId, StatusPedido novoStatus) {
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
 
         // Verificar se pode cancelar
-        if (pedido.getStatus() == StatusPedido.ENTREGUE) {
+        if (pedido.getStatusPedido() == StatusPedido.ENTREGUE) {
             throw new RuntimeException("Não é possível cancelar um pedido já entregue");
         }
-        if (pedido.getStatus() == StatusPedido.CANCELADO) {
+        if (pedido.getStatusPedido() == StatusPedido.CANCELADO) {
             throw new RuntimeException("Pedido já está cancelado");
         }
 
-        pedido.setStatus(StatusPedido.CANCELADO);
+        pedido.setStatusPedido(StatusPedido.CANCELADO);
         Pedido pedidoCancelado = pedidoRepository.save(pedido);
         log.info("Pedido cancelado - ID: {}", pedidoId);
         
@@ -165,8 +165,9 @@ public Pedido atualizarStatus(Long pedidoId, StatusPedido novoStatus) {
     // ✅ ADICIONAR: Método para buscar por status
     @Override
     @Transactional(readOnly = true)
-    public List<Pedido> buscarPorStatus(StatusPedido status) {
-        return pedidoRepository.findByStatus(status);
+    public List<Pedido> buscarPorStatus(StatusPedido statusPedido) {
+        // CORREÇÃO 1: findByStatus -> findByStatusPedido
+        return pedidoRepository.findByStatusPedido(statusPedido);
     }
 
     // ✅ ADICIONAR: Método para buscar por período
@@ -176,7 +177,7 @@ public Pedido atualizarStatus(Long pedidoId, StatusPedido novoStatus) {
         return pedidoRepository.findByDataPedidoBetween(inicio, fim);
     }
 
-        @Override
+    @Override
     @Transactional(readOnly = true)
     public List<Pedido> listarTodos() {
         return pedidoRepository.findAll();
@@ -200,23 +201,23 @@ public Pedido atualizarStatus(Long pedidoId, StatusPedido novoStatus) {
         
         for (ItemPedidoRequest itemRequest : itens) {
             // Buscar produto para obter preço atual
-            Produto produto = produtoRepository.findById(itemRequest.getProdutoId()) // CORRIGIDO: itemDTO → itemRequest
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado - ID: " + itemRequest.getProdutoId())); // CORRIGIDO
+            Produto produto = produtoRepository.findById(itemRequest.getProdutoId()) 
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado - ID: " + itemRequest.getProdutoId())); 
             
             // Validar disponibilidade
             if (!produto.getAtivo()) {
-                throw new RuntimeException("Produto não está disponível - ID: " + itemRequest.getProdutoId()); // CORRIGIDO
+                throw new RuntimeException("Produto não está disponível - ID: " + itemRequest.getProdutoId()); 
             }
             
             // Calcular subtotal do item
             BigDecimal precoUnitario = produto.getPreco();
-            BigDecimal quantidade = BigDecimal.valueOf(itemRequest.getQuantidade()); // CORRIGIDO: itemDTO → itemRequest
+            BigDecimal quantidade = BigDecimal.valueOf(itemRequest.getQuantidade()); 
             BigDecimal subtotal = precoUnitario.multiply(quantidade);
             
             total = total.add(subtotal);
             
             log.debug("Item calculado - Produto: {}, Qtd: {}, Preço: R$ {}, Subtotal: R$ {}", 
-                    produto.getNome(), itemRequest.getQuantidade(), precoUnitario, subtotal); // CORRIGIDO: itemDTO → itemRequest
+                      produto.getNome(), itemRequest.getQuantidade(), precoUnitario, subtotal);
         }
         
         log.info("Total calculado: R$ {}", total);
@@ -248,7 +249,8 @@ public Pedido atualizarStatus(Long pedidoId, StatusPedido novoStatus) {
         
         // Se apenas status foi fornecido
         if (status != null && inicioDateTime == null && fimDateTime == null) {
-            return pedidoRepository.findByStatus(status);
+            // CORREÇÃO 2: findByStatus -> findByStatusPedido
+            return pedidoRepository.findByStatusPedido(status);
         }
         
         // Se apenas período foi fornecido
@@ -258,7 +260,9 @@ public Pedido atualizarStatus(Long pedidoId, StatusPedido novoStatus) {
         
         // Se status e período foram fornecidos
         if (status != null && inicioDateTime != null && fimDateTime != null) {
-            return pedidoRepository.findByStatusAndDataPedidoBetween(status, inicioDateTime, fimDateTime);
+            // CORREÇÃO 3: findByStatusAndDataPedidoBetween -> findByStatusPedidoAndDataPedidoBetween
+            // NOTA: O parâmetro na chamada deve ser 'status' e não 'statusPedido'
+            return pedidoRepository.findByStatusPedidoAndDataPedidoBetween(status, inicioDateTime, fimDateTime);
         }
         
         // Casos parciais (apenas dataInicio ou apenas dataFim)

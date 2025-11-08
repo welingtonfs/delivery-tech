@@ -6,8 +6,8 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 
 @Component("customDiskSpace")
-public class CustomDiskSpaceHealthIndicator {
-    
+public class CustomDiskSpaceHealthIndicator implements HealthIndicator {
+
     private static final long THRESHOLD = 1024 * 1024 * 100L;
 
     @Override
@@ -29,5 +29,4 @@ public class CustomDiskSpaceHealthIndicator {
             return Health.down(e).withDetail("error", e.getMessage()).build();
         }
     }
-
 }
